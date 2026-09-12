@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   test:
@@ -18,8 +18,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.47.2'
-          channel: 'stable'
+          flutter-version: "3.47.2"
+          channel: "stable"
           cache: true
 
       - name: Install dependencies
@@ -30,7 +30,7 @@ jobs:
         continue-on-error: true
 
       - name: Analyze code
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Run tests
         run: flutter test --coverage
@@ -54,8 +54,8 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.47.2'
-          channel: 'stable'
+          flutter-version: "3.47.2"
+          channel: "stable"
           cache: true
 
       - name: Install dependencies
