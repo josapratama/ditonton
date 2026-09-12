@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const String BASE_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
+const BASE_IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
 
 // colors
 const Color kRichBlack = Color(0xFF000814);
@@ -12,28 +12,37 @@ const Color kDavysGrey = Color(0xFF4B5358);
 const Color kGrey = Color(0xFF303030);
 
 // text style
-final TextStyle kHeading5 =
-    GoogleFonts.poppins(fontSize: 23, fontWeight: FontWeight.w400);
+final TextStyle kHeading5 = GoogleFonts.poppins(
+  fontSize: 23,
+  fontWeight: FontWeight.w400,
+);
 final TextStyle kHeading6 = GoogleFonts.poppins(
-    fontSize: 19, fontWeight: FontWeight.w500, letterSpacing: 0.15);
+  fontSize: 19,
+  fontWeight: FontWeight.w500,
+  letterSpacing: 0.15,
+);
 final TextStyle kSubtitle = GoogleFonts.poppins(
-    fontSize: 15, fontWeight: FontWeight.w400, letterSpacing: 0.15);
+  fontSize: 15,
+  fontWeight: FontWeight.w400,
+  letterSpacing: 0.15,
+);
 final TextStyle kBodyText = GoogleFonts.poppins(
-    fontSize: 13, fontWeight: FontWeight.w400, letterSpacing: 0.25);
+  fontSize: 13,
+  fontWeight: FontWeight.w400,
+  letterSpacing: 0.25,
+);
 
 // text theme
-final kTextTheme = TextTheme(
+final textTheme = TextTheme(
   headlineMedium: kHeading5,
   headlineSmall: kHeading6,
   labelMedium: kSubtitle,
   bodyMedium: kBodyText,
 );
 
-final kDrawerTheme = DrawerThemeData(
-  backgroundColor: Colors.grey.shade700,
-);
+final drawerTheme = DrawerThemeData(backgroundColor: Colors.grey.shade700);
 
-const kColorScheme = ColorScheme(
+const colorScheme = ColorScheme(
   primary: kMikadoYellow,
   secondary: kPrussianBlue,
   secondaryContainer: kPrussianBlue,

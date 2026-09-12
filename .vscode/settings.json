@@ -1,0 +1,10 @@
+{
+  "java.project.sourcePaths": [],
+  "java.import.gradle.enabled": false,
+  "java.autobuild.enabled": false,
+  "java.project.referencedLibraries": [],
+  "java.import.exclusions": ["**/android/**", "**/build/**", "**/.gradle/**"],
+  "java.server.launchMode": "Standard",
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "java.project.importOnFirstTimeStartup": "disabled"
+}

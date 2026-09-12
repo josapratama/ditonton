@@ -1,6 +1,7 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:ditonton/data/models/movie_table.dart';
+import 'package:ditonton/data/models/tv_series_table.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
@@ -10,6 +11,22 @@ class DatabaseHelper {
   }
 
   factory DatabaseHelper() => _databaseHelper ?? DatabaseHelper._instance();
+
+  // Used in tests to reset the singleton
+  static void resetInstance() {
+    _databaseHelper = null;
+    _database = null;
+  }
+
+  // Used in tests to initialize with an in-memory database
+  Future<void> initForTest() async {
+    _database = await openDatabase(
+      inMemoryDatabasePath,
+      version: 2,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
+  }
 
   static Database? _database;
 
@@ -21,12 +38,18 @@ class DatabaseHelper {
   }
 
   static const String _tblWatchlist = 'watchlist';
+  static const String _tblWatchlistTVSeries = 'watchlist_tv_series';
 
   Future<Database> _initDb() async {
     final path = await getDatabasesPath();
     final databasePath = '$path/ditonton.db';
 
-    var db = await openDatabase(databasePath, version: 1, onCreate: _onCreate);
+    var db = await openDatabase(
+      databasePath,
+      version: 2,
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
+    );
     return db;
   }
 
@@ -39,8 +62,30 @@ class DatabaseHelper {
         posterPath TEXT
       );
     ''');
+    await db.execute('''
+      CREATE TABLE  $_tblWatchlistTVSeries (
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        overview TEXT,
+        posterPath TEXT
+      );
+    ''');
   }
 
+  void _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS $_tblWatchlistTVSeries (
+          id INTEGER PRIMARY KEY,
+          name TEXT,
+          overview TEXT,
+          posterPath TEXT
+        );
+      ''');
+    }
+  }
+
+  // Movie watchlist operations
   Future<int> insertWatchlist(MovieTable movie) async {
     final db = await database;
     return await db!.insert(_tblWatchlist, movie.toJson());
@@ -73,6 +118,45 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getWatchlistMovies() async {
     final db = await database;
     final List<Map<String, dynamic>> results = await db!.query(_tblWatchlist);
+
+    return results;
+  }
+
+  // TV Series watchlist operations
+  Future<int> insertWatchlistTVSeries(TVSeriesTable tvSeries) async {
+    final db = await database;
+    return await db!.insert(_tblWatchlistTVSeries, tvSeries.toJson());
+  }
+
+  Future<int> removeWatchlistTVSeries(TVSeriesTable tvSeries) async {
+    final db = await database;
+    return await db!.delete(
+      _tblWatchlistTVSeries,
+      where: 'id = ?',
+      whereArgs: [tvSeries.id],
+    );
+  }
+
+  Future<Map<String, dynamic>?> getTVSeriesById(int id) async {
+    final db = await database;
+    final results = await db!.query(
+      _tblWatchlistTVSeries,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (results.isNotEmpty) {
+      return results.first;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getWatchlistTVSeries() async {
+    final db = await database;
+    final List<Map<String, dynamic>> results = await db!.query(
+      _tblWatchlistTVSeries,
+    );
 
     return results;
   }

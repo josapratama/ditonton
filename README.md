@@ -1,52 +1,123 @@
-# a199-flutter-expert-project
+# Ditonton — Flutter Expert Final Submission
 
-Repository ini merupakan starter project submission kelas Flutter Expert Dicoding Indonesia.
+[![CI](https://github.com/josapratama/ditonton/actions/workflows/ci.yml/badge.svg)](https://github.com/josapratama/ditonton/actions/workflows/ci.yml)
+
+> **Catatan:** Repository: [https://github.com/josapratama/ditonton](https://github.com/josapratama/ditonton)
+
+Repository ini merupakan proyek submission akhir kelas **Flutter Expert** Dicoding Indonesia — _Membuat Aplikasi Siap Rilis_.
 
 ---
 
-## Tips Submission Awal
+## Fitur yang Diimplementasikan
 
-Pastikan untuk memeriksa kembali seluruh hasil testing pada submissionmu sebelum dikirimkan. Karena kriteria pada submission ini akan diperiksa setelah seluruh berkas testing berhasil dijalankan.
+### ✅ Kriteria Wajib
 
+#### 1. Continuous Integration (GitHub Actions)
 
-## Tips Submission Akhir
+- Workflow otomatis berjalan setiap ada `push` atau `pull_request` ke branch `main`/`master`
+- Menjalankan `flutter analyze` dan `flutter test --coverage`
+- Membangun APK debug secara otomatis
+- Konfigurasi: `.github/workflows/ci.yml`
 
-Jika kamu menerapkan modular pada project, Anda dapat memanfaatkan berkas `test.sh` pada repository ini. Berkas tersebut dapat mempermudah proses testing melalui *terminal* atau *command prompt*. Sebelumnya menjalankan berkas tersebut, ikuti beberapa langkah berikut:
-1. Install terlebih dahulu aplikasi sesuai dengan Operating System (OS) yang Anda gunakan.
-    - Bagi pengguna **Linux**, jalankan perintah berikut pada terminal.
-        ```
-        sudo apt-get update -qq -y
-        sudo apt-get install lcov -y
-        ```
-    
-    - Bagi pengguna **Mac**, jalankan perintah berikut pada terminal.
-        ```
-        brew install lcov
-        ```
-    - Bagi pengguna **Windows**, ikuti langkah berikut.
-        - Install [Chocolatey](https://chocolatey.org/install) pada komputermu.
-        - Setelah berhasil, install [lcov](https://community.chocolatey.org/packages/lcov) dengan menjalankan perintah berikut.
-            ```
-            choco install lcov
-            ```
-        - Kemudian cek **Environtment Variabel** pada kolom **System variabels** terdapat variabel GENTHTML dan LCOV_HOME. Jika tidak tersedia, Anda bisa menambahkan variabel baru dengan nilai seperti berikut.
-            | Variable | Value|
-            | ----------- | ----------- |
-            | GENTHTML | C:\ProgramData\chocolatey\lib\lcov\tools\bin\genhtml |
-            | LCOV_HOME | C:\ProgramData\chocolatey\lib\lcov\tools |
-        
-2. Untuk mempermudah proses verifikasi testing, jalankan perintah berikut.
-    ```
-    git init
-    ```
-3. Kemudian jalankan berkas `test.sh` dengan perintah berikut pada *terminal* atau *powershell*.
-    ```
-    test.sh
-    ```
-    atau
-    ```
-    ./test.sh
-    ```
-    Proses ini akan men-*generate* berkas `lcov.info` dan folder `coverage` terkait dengan laporan coverage.
-4. Tunggu proses testing selesai hingga muncul web terkait laporan coverage.
+#### 2. Migrasi State Management: Provider → BLoC
 
+- Seluruh state management dimigrasi dari `Provider`/`ChangeNotifier` ke `flutter_bloc`
+- BLoC yang diimplementasikan:
+  - **Movie:** `NowPlayingMoviesBloc`, `PopularMoviesBloc`, `TopRatedMoviesBloc`, `MovieDetailBloc`, `MovieSearchBloc`, `WatchlistMovieBloc`
+  - **TV Series:** `OnAirTVSeriesBloc`, `PopularTVSeriesBloc`, `TopRatedTVSeriesBloc`, `TVSeriesDetailBloc`, `TVSeriesSearchBloc`, `WatchlistTVSeriesBloc`
+
+#### 3. SSL Pinning
+
+- Sertifikat `*.themoviedb.org` di-pin menggunakan `SecurityContext` + `IOClient`
+- Sertifikat disimpan di `assets/themoviedb.cer`
+- Implementasi: `lib/common/ssl_pinning.dart`
+
+#### 4. Firebase Analytics & Crashlytics
+
+- **Firebase Analytics**: Mencatat navigasi pengguna secara otomatis via `FirebaseAnalyticsObserver`
+- **Firebase Crashlytics**: Menangkap Flutter errors (`FlutterError.onError`) dan async platform errors (`PlatformDispatcher.instance.onError`)
+- Konfigurasi Android: `android/app/google-services.json`
+
+---
+
+## Arsitektur
+
+Project menggunakan **Clean Architecture** dengan tiga lapisan:
+
+```
+lib/
+├── common/          # Constants, utils, SSL pinning
+├── data/            # Models, repositories impl, data sources
+├── domain/          # Entities, use cases, repository interfaces
+└── presentation/
+    ├── bloc/        # BLoC (events, states, blocs)
+    ├── pages/       # UI pages
+    └── widgets/     # Reusable widgets
+```
+
+---
+
+## Cara Menjalankan
+
+### Prasyarat
+
+- Flutter 3.47.2 (stable)
+- Android Studio / VS Code
+- File `google-services.json` dari Firebase Console (untuk fitur Analytics & Crashlytics)
+
+### Setup Firebase
+
+1. Buat project baru di [Firebase Console](https://console.firebase.google.com/)
+2. Daftarkan Android app dengan package name `com.dicoding.ditonton`
+3. Download `google-services.json` dan letakkan di `android/app/`
+4. Aktifkan **Analytics** dan **Crashlytics** di Firebase Console
+
+### Menjalankan Aplikasi
+
+```bash
+flutter pub get
+flutter run
+```
+
+### Menjalankan Tests
+
+```bash
+flutter test --coverage
+```
+
+---
+
+## Tips Submission
+
+Pastikan untuk memeriksa kembali seluruh hasil testing pada submissionmu sebelum dikirimkan.
+
+### Menjalankan test dengan coverage report
+
+#### Linux
+
+```bash
+sudo apt-get install lcov -y
+flutter test --coverage
+genhtml coverage/lcov.info -o coverage/html
+```
+
+#### Mac
+
+```bash
+brew install lcov
+flutter test --coverage
+genhtml coverage/lcov.info -o coverage/html
+```
+
+#### Windows (via Chocolatey)
+
+```powershell
+choco install lcov
+flutter test --coverage
+```
+
+Jika menggunakan modularisasi, jalankan `test.sh` di terminal:
+
+```bash
+./test.sh
+```
