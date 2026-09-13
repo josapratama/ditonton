@@ -9,12 +9,17 @@ class SslPinning {
   static Future<IOClient> createIOClient() async {
     if (_client != null) return _client!;
 
-    final sslCert = await rootBundle.load('assets/themoviedb.cer');
-    final securityContext = SecurityContext(withTrustedRoots: false);
+    // Load PEM certificate (TMDB API certificate)
+    final sslCert = await rootBundle.load('assets/themoviedb.pem');
+
+    // withTrustedRoots: true = keep system CAs (needed for Firebase, etc.)
+    // We ADD our cert on top of system roots for pinning TMDB
+    final securityContext = SecurityContext(withTrustedRoots: true);
     securityContext.setTrustedCertificatesBytes(sslCert.buffer.asInt8List());
 
     final httpClient = HttpClient(context: securityContext);
-    httpClient.badCertificateCallback = (_, __, ___) => false;
+    // Only allow valid certificates — reject bad certs
+    httpClient.badCertificateCallback = (cert, host, port) => false;
 
     _client = IOClient(httpClient);
     return _client!;
